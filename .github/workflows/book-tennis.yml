@@ -31,6 +31,7 @@ jobs:
           TENNIS_EMAIL: ${{ secrets.TENNIS_EMAIL }}
           TENNIS_PASSWORD: ${{ secrets.TENNIS_PASSWORD }}
           TENNIS_LOCATIONS: ${{ secrets.TENNIS_LOCATIONS }}
+          TENNIS_DATE: ${{ secrets.TENNIS_DATE }}
           TENNIS_HOURS: ${{ secrets.TENNIS_HOURS }}
           TENNIS_PLAYERS: ${{ secrets.TENNIS_PLAYERS }}
           TENNIS_PRICE_TYPE: ${{ secrets.TENNIS_PRICE_TYPE }}

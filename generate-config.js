@@ -14,7 +14,7 @@ const config = {
     ? JSON.parse(process.env.TENNIS_LOCATIONS)
     : ["Valeyre", "Suzanne Lenglen", "Poliveau"],
   // date is optional - if not set, will book 6 days in advance
-  // date: "9/10/2021",
+  ...(process.env.TENNIS_DATE && { date: process.env.TENNIS_DATE }),
   hours: process.env.TENNIS_HOURS
     ? JSON.parse(process.env.TENNIS_HOURS)
     : ["14", "15", "16", "10", "11"],
