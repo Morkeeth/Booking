@@ -109,6 +109,8 @@ To pass the payement phase without trouble you need a "carnet de réservation", 
 
 ### Running
 
+#### Local Execution
+
 To run this project locally, install the dependencies
 
 ```sh
@@ -130,7 +132,46 @@ To test your configuration, you can run this project in dry-run mode. It will ch
 npm run start-dry
 ```
 
-You can start script automatically using cron or equivalent
+#### Automated Execution with GitHub Actions
+
+You can automatically run this script daily at 8 AM using GitHub Actions. This is perfect for weekly court booking without needing to keep your computer running.
+
+**Setup Instructions:**
+
+1. **Fork/Push this repository to GitHub**
+
+2. **Configure GitHub Secrets:**
+   Go to your repository Settings → Secrets and variables → Actions → New repository secret
+
+   Required secrets:
+   - `TENNIS_EMAIL`: Your tennis.paris.fr account email
+   - `TENNIS_PASSWORD`: Your tennis.paris.fr account password
+   
+   Optional secrets (with defaults):
+   - `TENNIS_LOCATIONS`: Array of preferred locations, e.g., `["Valeyre", "Suzanne Lenglen"]`
+   - `TENNIS_HOURS`: Array of preferred hours, e.g., `["14", "15", "16"]`
+   - `TENNIS_PLAYERS`: Array of player objects, e.g., `[{"lastName": "Doe", "firstName": "John"}]`
+   - `TENNIS_PRICE_TYPE`: Array of price types, e.g., `["Tarif plein", "Tarif réduit"]`
+   - `TENNIS_COURT_TYPE`: Array of court types, e.g., `["Découvert", "Couvert"]`
+   - `NTFY_ENABLE`: Set to `true` to enable ntfy notifications
+   - `NTFY_TOPIC`: Your ntfy topic name for notifications
+
+3. **Configure the schedule:**
+   The workflow runs daily at 8:00 AM UTC by default. To adjust for your timezone, edit `.github/workflows/book-tennis.yml`:
+   - For 8 AM EST (Eastern): use `13 8 * * *` (UTC+5)
+   - For 8 AM PST (Pacific): use `16 8 * * *` (UTC+8)
+   - For 8 AM CET (Central European): use `7 8 * * *` (UTC-1)
+
+4. **Manual trigger (optional):**
+   You can manually trigger the workflow from the Actions tab → "Book Tennis Court" → "Run workflow"
+
+5. **Monitor execution:**
+   - View workflow runs in the Actions tab
+   - Failed runs will upload screenshots as artifacts for debugging
+
+**Note:** GitHub Actions runs in UTC timezone, so adjust the cron schedule accordingly. The script will book courts 6 days in advance by default.
+
+You can also start script automatically using cron or equivalent on your local machine
 
 ## Contributing
 

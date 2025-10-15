@@ -1,0 +1,51 @@
+name: Book Tennis Court
+
+on:
+  schedule:
+    # Runs every day at 8:00 AM CEST (6:00 AM UTC)
+    # 8 AM CEST = 6 AM UTC (UTC+2 for CEST)
+    - cron: '0 6 * * *'
+  
+  # Allows manual trigger from GitHub Actions UI
+  workflow_dispatch:
+
+jobs:
+  book-tennis:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Generate config.json from secrets
+        run: node generate-config.js
+        env:
+          TENNIS_EMAIL: ${{ secrets.TENNIS_EMAIL }}
+          TENNIS_PASSWORD: ${{ secrets.TENNIS_PASSWORD }}
+          TENNIS_LOCATIONS: ${{ secrets.TENNIS_LOCATIONS }}
+          TENNIS_HOURS: ${{ secrets.TENNIS_HOURS }}
+          TENNIS_PLAYERS: ${{ secrets.TENNIS_PLAYERS }}
+          TENNIS_PRICE_TYPE: ${{ secrets.TENNIS_PRICE_TYPE }}
+          TENNIS_COURT_TYPE: ${{ secrets.TENNIS_COURT_TYPE }}
+          NTFY_ENABLE: ${{ secrets.NTFY_ENABLE }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+      
+      - name: Run tennis booking script
+        run: npm start
+      
+      - name: Upload artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-screenshots
+          path: img/
+          if-no-files-found: ignore
+
