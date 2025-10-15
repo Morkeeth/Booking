@@ -2,9 +2,10 @@ name: Book Tennis Court
 
 on:
   schedule:
-    # Runs every day at 8:00 AM CEST (6:00 AM UTC)
-    # 8 AM CEST = 6 AM UTC (UTC+2 for CEST)
-    - cron: '0 6 * * *'
+    # Runs every day at 8:01 AM CEST (6:01 AM UTC)
+    # 8:01 AM CEST = 6:01 AM UTC (UTC+2 for CEST)
+    # 1 minute delay to avoid initial server rush
+    - cron: '1 6 * * *'
   
   # Allows manual trigger from GitHub Actions UI
   workflow_dispatch:
