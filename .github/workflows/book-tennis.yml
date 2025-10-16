@@ -1,8 +1,12 @@
 name: Book Tennis Court
 
 on:
-  # Manual trigger only - prevents automatic daily runs that would wipe existing bookings
-  # Paris tennis only allows ONE booking at a time
+  schedule:
+    # Runs every Wednesday at 8:01 AM CEST (6:01 AM UTC)
+    # Wednesday = day 3 in cron (0 = Sunday)
+    - cron: '1 6 * * 3'
+  
+  # Manual trigger option for testing or one-off bookings
   workflow_dispatch:
 
 jobs:
