@@ -2,9 +2,10 @@ name: Book Tennis Court
 
 on:
   schedule:
-    # Runs every Wednesday at 8:01 AM CEST (6:01 AM UTC)
-    # Wednesday = day 3 in cron (0 = Sunday)
-    - cron: '1 6 * * 3'
+    # Runs every Thursday at 8:01 AM CEST (6:01 AM UTC)
+    # Thursday = day 4 in cron (0 = Sunday)
+    # This books for Wednesday 6 days ahead
+    - cron: '1 6 * * 4'
   
   # Manual trigger option for testing or one-off bookings
   workflow_dispatch:
