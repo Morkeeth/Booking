@@ -2,16 +2,14 @@ name: Book Tennis Court
 
 on:
   schedule:
-    # Runs every Thursday at 8:01 AM CEST (6:01 AM UTC)
-    # Thursday = day 4 in cron (0 = Sunday)
-    # This books for Wednesday 6 days ahead
-    - cron: '1 6 * * 4'
+    # Runs at 8:00 AM CET/CEST (7:00 AM UTC in winter, 6:00 AM UTC in summer)
+    # Adjust this cron schedule based on your timezone
+    - cron: '0 6 * * *'  # 6 AM UTC = 8 AM CEST (summer time)
   
-  # Manual trigger option for testing or one-off bookings
-  workflow_dispatch:
+  workflow_dispatch:  # Allows manual triggering from GitHub Actions tab
 
 jobs:
-  book-tennis:
+  book-court:
     runs-on: ubuntu-latest
     
     steps:
@@ -24,30 +22,62 @@ jobs:
           node-version: '20'
       
       - name: Install dependencies
-        run: npm ci
+        run: npm install
       
-      - name: Generate config.json from secrets
-        run: node generate-config.js
-        env:
-          TENNIS_EMAIL: ${{ secrets.TENNIS_EMAIL }}
-          TENNIS_PASSWORD: ${{ secrets.TENNIS_PASSWORD }}
-          TENNIS_LOCATIONS: ${{ secrets.TENNIS_LOCATIONS }}
-          TENNIS_DATE: ${{ secrets.TENNIS_DATE }}
-          TENNIS_HOURS: ${{ secrets.TENNIS_HOURS }}
-          TENNIS_PLAYERS: ${{ secrets.TENNIS_PLAYERS }}
-          TENNIS_PRICE_TYPE: ${{ secrets.TENNIS_PRICE_TYPE }}
-          TENNIS_COURT_TYPE: ${{ secrets.TENNIS_COURT_TYPE }}
-          NTFY_ENABLE: ${{ secrets.NTFY_ENABLE }}
-          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+      - name: Generate config from secrets
+        run: |
+          cat > config.json << EOF
+          {
+            "account": {
+              "email": "${{ secrets.TENNIS_EMAIL }}",
+              "password": "${{ secrets.TENNIS_PASSWORD }}"
+            },
+            "locations": [
+              "Édouard Pailleron",
+              "Candie",
+              "Poliveau"
+            ],
+            "date": "29/10/2025",
+            "hours": [
+              "20"
+            ],
+            "priceType": [
+              "Tarif plein",
+              "Tarif réduit"
+            ],
+            "courtType": [
+              "Découvert",
+              "Couvert"
+            ],
+            "players": ${{ secrets.TENNIS_PLAYERS }},
+            "ntfy": {
+              "enable": ${{ secrets.NTFY_ENABLE || 'false' }},
+              "topic": "${{ secrets.NTFY_TOPIC || 'YOUR-OWN-TOPIC' }}"
+            },
+            "ai": {
+              "space": "FatBoyEnglish/Text_Captcha_breaker"
+            }
+          }
+          EOF
       
-      - name: Run tennis booking script
+      - name: Run booking script
         run: npm start
+        continue-on-error: true
       
-      - name: Upload artifacts on failure
+      - name: Upload screenshots on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: failure-screenshots
-          path: img/
-          if-no-files-found: ignore
-
+          name: failure-screenshots-${{ github.run_number }}
+          path: img/*.png
+          retention-days: 7
+      
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: booking-logs-${{ github.run_number }}
+          path: |
+            *.log
+            event.ics
+          retention-days: 7
