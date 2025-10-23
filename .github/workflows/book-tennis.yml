@@ -2,9 +2,9 @@ name: Book Tennis Court
 
 on:
   schedule:
-    # Runs at 8:00 AM CET/CEST (7:00 AM UTC in winter, 6:00 AM UTC in summer)
-    # Adjust this cron schedule based on your timezone
-    - cron: '0 6 * * *'  # 6 AM UTC = 8 AM CEST (summer time)
+    # Runs every THURSDAY at 8:00 AM CEST (6:00 AM UTC)
+    # Thursday = 4 (0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday)
+    - cron: '0 6 * * 4'  # Every Thursday at 6 AM UTC = 8 AM CEST
   
   workflow_dispatch:  # Allows manual triggering from GitHub Actions tab
 
@@ -37,7 +37,7 @@ jobs:
               "Candie",
               "Poliveau"
             ],
-            "date": "29/10/2025",
+            "date": "5/11/2025",
             "hours": [
               "20"
             ],
