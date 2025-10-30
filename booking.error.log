@@ -1,0 +1,72 @@
+file:///Users/morkeeth/EVALUATOR/Booking/staticFiles.js:1
+import config from './config.json' with { type: 'json' }
+                                   ^^^^
+
+SyntaxError: Unexpected token 'with'
+    at ESMLoader.moduleStrategy (node:internal/modules/esm/translators:119:18)
+    at ESMLoader.moduleProvider (node:internal/modules/esm/loader:468:14)
+
+Node.js v18.17.1
+file:///Users/morkeeth/EVALUATOR/Booking/staticFiles.js:1
+import config from './config.json' with { type: 'json' }
+                                   ^^^^
+
+SyntaxError: Unexpected token 'with'
+    at ESMLoader.moduleStrategy (node:internal/modules/esm/translators:119:18)
+    at ESMLoader.moduleProvider (node:internal/modules/esm/loader:468:14)
+
+Node.js v18.17.1
+file:///Users/morkeeth/EVALUATOR/Booking/staticFiles.js:1
+import config from './config.json' with { type: 'json' }
+                                   ^^^^
+
+SyntaxError: Unexpected token 'with'
+    at ESMLoader.moduleStrategy (node:internal/modules/esm/translators:119:18)
+    at ESMLoader.moduleProvider (node:internal/modules/esm/loader:468:14)
+
+Node.js v18.17.1
+file:///Users/morkeeth/EVALUATOR/Booking/staticFiles.js:1
+import config from './config.json' with { type: 'json' }
+                                   ^^^^
+
+SyntaxError: Unexpected token 'with'
+    at ESMLoader.moduleStrategy (node:internal/modules/esm/translators:119:18)
+    at ESMLoader.moduleProvider (node:internal/modules/esm/loader:468:14)
+
+Node.js v18.17.1
+file:///Users/morkeeth/EVALUATOR/Booking/staticFiles.js:1
+import config from './config.json' with { type: 'json' }
+                                   ^^^^
+
+SyntaxError: Unexpected token 'with'
+    at ESMLoader.moduleStrategy (node:internal/modules/esm/translators:119:18)
+    at ESMLoader.moduleProvider (node:internal/modules/esm/loader:468:14)
+
+Node.js v18.17.1
+file:///Users/morkeeth/EVALUATOR/Booking/staticFiles.js:1
+import config from './config.json' with { type: 'json' }
+                                   ^^^^
+
+SyntaxError: Unexpected token 'with'
+    at ESMLoader.moduleStrategy (node:internal/modules/esm/translators:119:18)
+    at ESMLoader.moduleProvider (node:internal/modules/esm/loader:468:14)
+
+Node.js v18.17.1
+file:///Users/morkeeth/EVALUATOR/Booking/staticFiles.js:1
+import config from './config.json' with { type: 'json' }
+                                   ^^^^
+
+SyntaxError: Unexpected token 'with'
+    at ESMLoader.moduleStrategy (node:internal/modules/esm/translators:119:18)
+    at ESMLoader.moduleProvider (node:internal/modules/esm/loader:468:14)
+
+Node.js v18.17.1
+file:///Users/morkeeth/EVALUATOR/Booking/staticFiles.js:1
+import config from './config.json' with { type: 'json' }
+                                   ^^^^
+
+SyntaxError: Unexpected token 'with'
+    at ESMLoader.moduleStrategy (node:internal/modules/esm/translators:119:18)
+    at ESMLoader.moduleProvider (node:internal/modules/esm/loader:468:14)
+
+Node.js v18.17.1

@@ -2,9 +2,9 @@ name: Book Tennis Court
 
 on:
   schedule:
-    # Runs every THURSDAY at 8:00 AM CET (7:00 AM UTC)
-    # Thursday = 4 (0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday)
-    - cron: '0 7 * * 4'  # Every Thursday at 7 AM UTC = 8 AM CET
+    # Runs every THURSDAY and FRIDAY at 8:00 AM CET (7:00 AM UTC)
+    # Thursday = 4, Friday = 5 (0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday)
+    - cron: '0 7 * * 4,5'  # Every Thursday & Friday at 7 AM UTC = 8 AM CET
   
   workflow_dispatch:  # Allows manual triggering from GitHub Actions tab
 
@@ -37,7 +37,7 @@ jobs:
               "Candie",
               "Poliveau"
             ],
-            "date": "6/11/2025",
+            "date": "7/11/2025",
             "hours": [
               "20"
             ],
