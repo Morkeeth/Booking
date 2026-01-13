@@ -70,3 +70,329 @@ SyntaxError: Unexpected token 'with'
     at ESMLoader.moduleProvider (node:internal/modules/esm/loader:468:14)
 
 Node.js v18.17.1
+file:///Users/morkeeth/EVALUATOR/Booking/staticFiles.js:1
+import config from './config.json' with { type: 'json' }
+                                   ^^^^
+
+SyntaxError: Unexpected token 'with'
+    at ESMLoader.moduleStrategy (node:internal/modules/esm/translators:119:18)
+    at ESMLoader.moduleProvider (node:internal/modules/esm/loader:468:14)
+
+Node.js v18.17.1
+file:///Users/morkeeth/EVALUATOR/Booking/staticFiles.js:1
+import config from './config.json' with { type: 'json' }
+                                   ^^^^
+
+SyntaxError: Unexpected token 'with'
+    at ESMLoader.moduleStrategy (node:internal/modules/esm/translators:119:18)
+    at ESMLoader.moduleProvider (node:internal/modules/esm/loader:468:14)
+
+Node.js v18.17.1
+file:///Users/morkeeth/EVALUATOR/Booking/staticFiles.js:1
+import config from './config.json' with { type: 'json' }
+                                   ^^^^
+
+SyntaxError: Unexpected token 'with'
+    at ESMLoader.moduleStrategy (node:internal/modules/esm/translators:119:18)
+    at ESMLoader.moduleProvider (node:internal/modules/esm/loader:468:14)
+
+Node.js v18.17.1
+file:///Users/morkeeth/EVALUATOR/Booking/staticFiles.js:1
+import config from './config.json' with { type: 'json' }
+                                   ^^^^
+
+SyntaxError: Unexpected token 'with'
+    at ESMLoader.moduleStrategy (node:internal/modules/esm/translators:119:18)
+    at ESMLoader.moduleProvider (node:internal/modules/esm/loader:468:14)
+
+Node.js v18.17.1
+file:///Users/morkeeth/EVALUATOR/Booking/staticFiles.js:1
+import config from './config.json' with { type: 'json' }
+                                   ^^^^
+
+SyntaxError: Unexpected token 'with'
+    at ESMLoader.moduleStrategy (node:internal/modules/esm/translators:119:18)
+    at ESMLoader.moduleProvider (node:internal/modules/esm/loader:468:14)
+
+Node.js v18.17.1
+(node:76696) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:76696) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+(node:97445) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:97445) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+(node:30380) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:30380) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+(node:57252) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:57252) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+(node:94028) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:94028) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+(node:15458) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:15458) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+(node:65177) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65177) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+page.goto: Timeout 120000ms exceeded.
+Call log:
+  - navigating to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1", waiting until "load"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:25:14) {
+  name: 'TimeoutError'
+}
+
+Node.js v18.17.1
+(node:30192) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:30192) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+(node:40014) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:40014) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+page.waitForSelector: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator('.main-informations') to be visible
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:35:14) {
+  name: 'TimeoutError'
+}
+
+Node.js v18.17.1
+(node:82361) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:82361) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+(node:45746) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:45746) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+page.goto: net::ERR_INTERNET_DISCONNECTED at https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1
+Call log:
+  - navigating to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1", waiting until "load"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:25:14) {
+  name: 'Error'
+}
+
+Node.js v18.17.1
+(node:51046) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:51046) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+page.goto: net::ERR_INTERNET_DISCONNECTED at https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1
+Call log:
+  - navigating to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1", waiting until "load"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:25:14) {
+  name: 'Error'
+}
+
+Node.js v18.17.1
+(node:56095) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:56095) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+page.goto: net::ERR_INTERNET_DISCONNECTED at https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1
+Call log:
+  - navigating to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1", waiting until "load"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:25:14) {
+  name: 'Error'
+}
+
+Node.js v18.17.1
+(node:60900) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:60900) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+page.goto: net::ERR_INTERNET_DISCONNECTED at https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1
+Call log:
+  - navigating to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1", waiting until "load"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:25:14) {
+  name: 'Error'
+}
+
+Node.js v18.17.1
+(node:65321) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:65321) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+page.goto: net::ERR_INTERNET_DISCONNECTED at https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1
+Call log:
+  - navigating to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1", waiting until "load"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:25:14) {
+  name: 'Error'
+}
+
+Node.js v18.17.1
+(node:69150) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:69150) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+page.goto: net::ERR_INTERNET_DISCONNECTED at https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1
+Call log:
+  - navigating to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1", waiting until "load"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:25:14) {
+  name: 'Error'
+}
+
+Node.js v18.17.1
+(node:5031) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:5031) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+page.waitForSelector: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator('.main-informations') to be visible
+    - waiting for" https://tennis.paris.fr/tennis/servlet/plugins/oauth2/callback?data_client=authData&complementary_parameter=prompt%3Dnone" navigation to finish...
+    - navigated to "https://moncompte.paris.fr/moncompte/jsp/site/Portal.jsp?page=mydashboardIdentity&view=getCheckIdentity&app_code=T23-PR-FO-01&back_url=https%3A%2F%2Ftennis.paris.fr%2Ftennis%2Fservlet%2Fplugins%2Foau…"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:35:14) {
+  name: 'TimeoutError'
+}
+
+Node.js v18.17.1
+(node:27910) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:27910) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+page.waitForSelector: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator('.main-informations') to be visible
+    - waiting for" https://tennis.paris.fr/tennis/servlet/plugins/oauth2/callback?data_client=authData&complementary_parameter=prompt%3Dnone" navigation to finish...
+    - navigated to "https://moncompte.paris.fr/moncompte/jsp/site/Portal.jsp?page=mydashboardIdentity&view=getCheckIdentity&app_code=T23-PR-FO-01&back_url=https%3A%2F%2Ftennis.paris.fr%2Ftennis%2Fservlet%2Fplugins%2Foau…"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:35:14) {
+  name: 'TimeoutError'
+}
+
+Node.js v18.17.1
+(node:78530) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:78530) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+page.goto: Timeout 120000ms exceeded.
+Call log:
+  - navigating to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1", waiting until "load"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:25:14) {
+  name: 'TimeoutError'
+}
+
+Node.js v18.17.1
+(node:86955) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:86955) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+page.click: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator('#button_suivi_inscription')
+    - locator resolved to <button id="button_suivi_inscription" class="btn btn-darkblue medium create-account rollover rollover-grey">Je me connecte</button>
+  - attempting click action
+    - waiting for element to be visible, enabled and stable
+    - element is visible, enabled and stable
+    - scrolling into view if needed
+    - done scrolling
+    - performing click action
+    - click action done
+    - waiting for scheduled navigations to finish
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:27:14) {
+  name: 'TimeoutError'
+}
+
+Node.js v18.17.1
+(node:93314) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:93314) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+page.goto: net::ERR_INTERNET_DISCONNECTED at https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1
+Call log:
+  - navigating to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1", waiting until "load"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:25:14) {
+  name: 'Error'
+}
+
+Node.js v18.17.1
+(node:40607) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:40607) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+page.waitForSelector: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator('.main-informations') to be visible
+    - waiting for" https://tennis.paris.fr/tennis/servlet/plugins/oauth2/callback?data_client=authData&complementary_parameter=prompt%3Dnone" navigation to finish...
+    - navigated to "https://moncompte.paris.fr/moncompte/jsp/site/Portal.jsp?page=mydashboardIdentity&view=getCheckIdentity&app_code=T23-PR-FO-01&back_url=https%3A%2F%2Ftennis.paris.fr%2Ftennis%2Fservlet%2Fplugins%2Foau…"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:35:14) {
+  name: 'TimeoutError'
+}
+
+Node.js v18.17.1
+(node:51901) ExperimentalWarning: Import assertions are not a stable feature of the JavaScript language. Avoid relying on their current behavior and syntax as those might change in a future version of Node.js.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:51901) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+node:internal/process/promises:288
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+page.waitForSelector: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator('.main-informations') to be visible
+    - waiting for" https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1" navigation to finish...
+    - navigated to "https://moncompte.paris.fr/moncompte/jsp/site/Portal.jsp?page=mydashboardIdentity&view=getCheckIdentity&app_code=T23-PR-FO-01&back_url=https%3A%2F%2Ftennis.paris.fr%2Ftennis%2Fservlet%2Fplugins%2Foau…"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:35:14) {
+  name: 'TimeoutError'
+}
+
+Node.js v18.17.1

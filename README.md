@@ -1,8 +1,6 @@
-# par-ici-tennis (*Parisii tennis*)
+# tennis-booker-paris
 
 Script to automatically book a tennis court (on https://tennis.paris.fr)
-
-> "Par ici" mean "this way" in french. The "Parisii" were a Gallic tribe that dwelt on the banks of the river Seine. They lived on lands now occupied by the modern city of Paris. The project name can be interpreted as "For a Parisian tennis, follow this way"
 
 **NOTE**: They recently added a CAPTCHA during reservation process. The latest version **should** pass through. If it fails, open an issue with error logs, I will try to find an other way.
 
@@ -175,7 +173,7 @@ You can also start script automatically using cron or equivalent on your local m
 
 ## Contributing
 
-Contributions and bug reports are welcome! Please open an [issue](https://github.com/bertrandda/par-ici-tennis/issues) or submit a [pull request](https://github.com/bertrandda/par-ici-tennis/pulls).
+Contributions and bug reports are welcome! Please open an issue or submit a pull request.
 
 ## License
 

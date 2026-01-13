@@ -1,0 +1,146 @@
+2025-11-05T08:02:00+01:00 - Starting searching tennis
+2025-11-05T08:02:01+01:00 - Browser started
+2025-11-05T08:02:04+01:00 - User connected
+2025-11-05T08:02:04+01:00 - Search at Candie
+locator.screenshot: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator('#li-antibot-iframe').contentFrame().locator('#li-antibot-questions-container img')
+    - waiting for" https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&action=reservation_captcha" navigation to finish...
+    - navigated to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&view=return_reservation_captcha"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:115:94) {
+  name: 'TimeoutError'
+}
+2025-11-06T08:17:05+01:00 - Starting searching tennis
+2025-11-06T08:17:05+01:00 - Browser started
+2025-11-06T08:17:08+01:00 - User connected
+2025-11-06T08:17:09+01:00 - Search at Candie
+page.goto: Timeout 120000ms exceeded.
+Call log:
+  - navigating to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=recherche&view=recherche_creneau#!", waiting until "load"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:42:18) {
+  name: 'TimeoutError'
+}
+2025-11-07T08:03:10+01:00 - Starting searching tennis
+2025-11-07T08:03:10+01:00 - Browser started
+2025-11-07T08:03:29+01:00 - User connected
+2025-11-07T08:03:31+01:00 - Search at Candie
+2025-11-07T08:03:43+01:00 - Failed to find reservation for Candie
+2025-11-07T08:03:43+01:00 - Search at Poliveau
+2025-11-07T08:03:45+01:00 - Failed to find reservation for Poliveau
+2025-11-07T08:03:45+01:00 - Search at Suzanne Lenglen
+locator.screenshot: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator('#li-antibot-iframe').contentFrame().locator('#li-antibot-questions-container img')
+    - waiting for" https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&view=return_reservation_captcha" navigation to finish...
+    - navigated to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&view=return_reservation_captcha"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:115:94) {
+  name: 'TimeoutError'
+}
+2025-11-08T08:05:11+01:00 - Starting searching tennis
+2025-11-08T08:05:12+01:00 - Browser started
+2025-11-08T08:05:15+01:00 - User connected
+2025-11-08T08:05:16+01:00 - Search at Candie
+2025-11-08T08:05:19+01:00 - Failed to find reservation for Candie
+2025-11-08T08:05:19+01:00 - Search at Poliveau
+2025-11-08T08:05:23+01:00 - Failed to find reservation for Poliveau
+2025-11-08T08:05:23+01:00 - Search at Suzanne Lenglen
+locator.screenshot: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator('#li-antibot-iframe').contentFrame().locator('#li-antibot-questions-container img')
+    - waiting for" https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&action=reservation_captcha" navigation to finish...
+    - navigated to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&view=return_reservation_captcha"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:115:94) {
+  name: 'TimeoutError'
+}
+2025-11-09T08:05:18+01:00 - Starting searching tennis
+2025-11-09T08:05:18+01:00 - Browser started
+2025-11-09T08:05:20+01:00 - User connected
+2025-11-09T08:05:21+01:00 - Search at Candie
+page.click: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator('#when')
+    - locator resolved to <input readonly id="when" type="text" class="form-control" value="Sunday 09 November 2025" placeholder="Sélectionnner une date"/>
+  - attempting click action
+    - waiting for element to be visible, enabled and stable
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:50:18) {
+  name: 'TimeoutError'
+}
+2025-11-10T08:07:29+01:00 - Starting searching tennis
+2025-11-10T08:07:30+01:00 - Browser started
+2025-11-10T08:07:32+01:00 - User connected
+2025-11-10T08:07:34+01:00 - Search at Candie
+2025-11-10T08:07:38+01:00 - Failed to find reservation for Candie
+2025-11-10T08:07:38+01:00 - Search at Poliveau
+2025-11-10T08:07:44+01:00 - Failed to find reservation for Poliveau
+2025-11-10T08:07:44+01:00 - Search at Suzanne Lenglen
+locator.screenshot: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator('#li-antibot-iframe').contentFrame().locator('#li-antibot-questions-container img')
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:115:94) {
+  name: 'TimeoutError'
+}
+2025-11-11T08:11:51+01:00 - Starting searching tennis
+2025-11-11T08:11:52+01:00 - Browser started
+2025-11-12T08:00:05+01:00 - Starting searching tennis
+2025-11-12T08:00:08+01:00 - Browser started
+2025-11-12T08:00:10+01:00 - User connected
+2025-11-12T08:00:11+01:00 - Search at Candie
+locator.screenshot: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator('#li-antibot-iframe').contentFrame().locator('#li-antibot-questions-container img')
+    - waiting for" https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&view=return_reservation_captcha" navigation to finish...
+    - navigated to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&view=return_reservation_captcha"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:115:94) {
+  name: 'TimeoutError'
+}
+2025-11-13T08:01:11+01:00 - Starting searching tennis
+2025-11-13T08:01:12+01:00 - Browser started
+2025-11-13T08:02:44+01:00 - User connected
+2025-11-14T08:00:40+01:00 - Starting searching tennis
+2025-11-14T08:00:40+01:00 - Browser started
+2025-11-14T08:00:44+01:00 - User connected
+2025-11-14T08:00:45+01:00 - Search at Candie
+page.goto: Timeout 120000ms exceeded.
+Call log:
+  - navigating to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=recherche&view=recherche_creneau#!", waiting until "load"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:42:18) {
+  name: 'TimeoutError'
+}
+2025-11-15T08:12:16+01:00 - Starting searching tennis
+2025-11-15T08:12:16+01:00 - Browser started
+2025-11-16T08:10:14+01:00 - Starting searching tennis
+2025-11-16T08:10:14+01:00 - Browser started
+2025-11-17T08:07:30+01:00 - Starting searching tennis
+2025-11-17T08:07:30+01:00 - Browser started
+2025-11-18T08:13:23+01:00 - Starting searching tennis
+2025-11-18T08:13:24+01:00 - Browser started
+2025-11-19T08:05:55+01:00 - Starting searching tennis
+2025-11-19T08:05:56+01:00 - Browser started
+2025-11-20T08:00:03+01:00 - Starting searching tennis
+2025-11-20T08:00:03+01:00 - Browser started
+2025-11-21T04:00:05-03:00 - Starting searching tennis
+2025-11-21T04:00:06-03:00 - Browser started
+2025-11-21T04:00:14-03:00 - User connected
+2025-11-22T04:04:40-03:00 - Starting searching tennis
+2025-11-22T04:04:40-03:00 - Browser started
+2025-11-22T04:04:49-03:00 - User connected
+2025-11-23T04:10:16-03:00 - Starting searching tennis
+2025-11-23T04:10:16-03:00 - Browser started
+2025-11-24T04:11:25-03:00 - Starting searching tennis
+2025-11-24T04:11:28-03:00 - Browser started
+2025-11-25T04:01:32-03:00 - Starting searching tennis
+2025-11-25T04:01:32-03:00 - Browser started
+2025-11-26T08:02:01+01:00 - Starting searching tennis
+2025-11-26T08:02:01+01:00 - Browser started
+2025-11-26T08:02:04+01:00 - User connected
+2025-11-27T08:00:06+01:00 - Starting searching tennis
+2025-11-27T08:00:06+01:00 - Browser started
+2025-11-27T08:00:08+01:00 - User connected
