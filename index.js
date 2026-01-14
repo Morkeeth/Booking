@@ -9,19 +9,32 @@ import { notify } from './lib/ntfy.js'
 
 dayjs.extend(customParseFormat)
 
-const bookTennis = async () => {
+const bookTennis = async (retryCount = 0) => {
   const DRY_RUN_MODE = process.argv.includes('--dry-run')
+  const MAX_RETRIES = 3
+  
   if (DRY_RUN_MODE) {
     console.log('----- DRY RUN START -----')
     console.log('Script lancé en mode DRY RUN. Afin de tester votre configuration, une recherche va être lancé mais AUCUNE réservation ne sera réalisée')
   }
 
+  if (retryCount > 0) {
+    console.log(`${dayjs().format()} - Retry attempt ${retryCount}/${MAX_RETRIES}`)
+    await new Promise(resolve => setTimeout(resolve, 5000)) // Wait 5 seconds before retry
+  }
+
   console.log(`${dayjs().format()} - Starting searching tennis`)
-  const browser = await chromium.launch({ headless: true, slowMo: 0, timeout: 120000 })
+  // Optimize for speed - disable images, reduce timeouts
+  const browser = await chromium.launch({ 
+    headless: true, 
+    slowMo: 0, 
+    timeout: 60000,
+    args: ['--disable-images', '--disable-javascript'] // Speed optimization
+  })
 
   console.log(`${dayjs().format()} - Browser started`)
   const page = await browser.newPage()
-  page.setDefaultTimeout(120000)
+  page.setDefaultTimeout(60000) // Reduced timeout for faster failure
   await page.goto('https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1')
 
   await page.click('#button_suivi_inscription')
@@ -31,32 +44,34 @@ const bookTennis = async () => {
 
   console.log(`${dayjs().format()} - User connected`)
 
-  // wait for login redirection before continue
-  await page.waitForSelector('.main-informations')
+  // wait for login redirection - faster timeout
+  await page.waitForSelector('.main-informations', { timeout: 30000 })
 
   try {
     const locations = !Array.isArray(config.locations) ? Object.keys(config.locations) : config.locations
     locationsLoop:
     for (const location of locations) {
       console.log(`${dayjs().format()} - Search at ${location}`)
-      await page.goto('https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=recherche&view=recherche_creneau#!')
+      // Faster navigation
+      await page.goto('https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=recherche&view=recherche_creneau#!', { waitUntil: 'domcontentloaded' })
 
-      // select tennis location
-      await page.locator('.tokens-input-text').pressSequentially(`${location} `)
-      await page.waitForSelector(`.tokens-suggestions-list-element >> text="${location}"`)
+      // select tennis location - use fill instead of pressSequentially for speed
+      await page.locator('.tokens-input-text').fill(`${location} `)
+      await page.waitForSelector(`.tokens-suggestions-list-element >> text="${location}"`, { timeout: 10000 })
       await page.click(`.tokens-suggestions-list-element >> text="${location}"`)
 
-      // select date
+      // select date - pre-calculate
       await page.click('#when')
       const date = config.date ? dayjs(config.date, 'D/MM/YYYY') : dayjs().add(6, 'days')
-      await page.waitForSelector(`[dateiso="${date.format('DD/MM/YYYY')}"]`)
-      await page.click(`[dateiso="${date.format('DD/MM/YYYY')}"]`)
-      await page.waitForSelector('.date-picker', { state: 'hidden' })
+      const dateSelector = `[dateiso="${date.format('DD/MM/YYYY')}"]`
+      await page.waitForSelector(dateSelector, { timeout: 10000 })
+      await page.click(dateSelector)
+      await page.waitForSelector('.date-picker', { state: 'hidden', timeout: 5000 })
 
       await page.click('#rechercher')
 
-      // wait until the results page is fully loaded before continue
-      await page.waitForLoadState('domcontentloaded')
+      // Faster load check
+      await page.waitForLoadState('domcontentloaded', { timeout: 30000 })
 
       let selectedHour
       hoursLoop:
@@ -98,29 +113,37 @@ const bookTennis = async () => {
       await page.waitForLoadState('domcontentloaded')
 
       if (await page.$('.captcha')) {
+        console.log(`${dayjs().format()} - CAPTCHA detected, attempting to solve`)
         let i = 0
         let note
         do {
-          if (i > 2) {
-            throw new Error('Can\'t resolve captcha, reservation cancelled')
+          if (i > 4) {
+            // Increased retries for CAPTCHA
+            console.log(`${dayjs().format()} - CAPTCHA failed after ${i} attempts, will retry entire booking`)
+            throw new Error('Can\'t resolve captcha after multiple attempts')
           }
 
           if (i > 0) {
+            console.log(`${dayjs().format()} - Waiting for new CAPTCHA (attempt ${i + 1})`)
             const iframeDetached = new Promise((resolve) => {
               page.on('framedetached', () => resolve('New captcha'))
             })
             await iframeDetached
+            await new Promise(resolve => setTimeout(resolve, 2000))
           }
-          const captchaIframe = await page.frameLocator('#li-antibot-iframe')
+          
+          // Original simpler approach - just wait for iframe and solve
+          const captchaIframe = page.frameLocator('#li-antibot-iframe')
           const captcha = await captchaIframe.locator('#li-antibot-questions-container img').screenshot({ path: 'img/captcha.png' })
           const resCaptcha = await huggingFaceAPI(new Blob([captcha]))
           await captchaIframe.locator('#li-antibot-answer').pressSequentially(resCaptcha)
           await new Promise(resolve => setTimeout(resolve, 500))
           await captchaIframe.locator('#li-antibot-validate').click()
 
-          note = await captchaIframe.locator('#li-antibot-check-note')
+          note = captchaIframe.locator('#li-antibot-check-note')
           i++
-        } while (await note.innerText() !== 'Vérifié avec succès')
+        } while (noteText !== 'Vérifié avec succès')
+        console.log(`${dayjs().format()} - CAPTCHA solved successfully`)
       }
 
 
@@ -197,11 +220,40 @@ const bookTennis = async () => {
       break
     }
   } catch (e) {
-    console.log(e)
-    await page.screenshot({ path: 'img/failure.png' })
+    console.log(`${dayjs().format()} - Error occurred: ${e.message}`)
+    await page.screenshot({ path: `img/failure-${Date.now()}.png` }).catch(() => {})
+    
+    // Retry logic for recoverable errors
+    if (retryCount < MAX_RETRIES) {
+      const errorMsg = e.message.toLowerCase()
+      const isRetryableError = 
+        errorMsg.includes('captcha') ||
+        errorMsg.includes('timeout') ||
+        errorMsg.includes('network') ||
+        errorMsg.includes('navigation') ||
+        errorMsg.includes('image not found')
+      
+      if (isRetryableError) {
+        console.log(`${dayjs().format()} - Retryable error detected, attempting retry ${retryCount + 1}/${MAX_RETRIES}`)
+        await browser.close()
+        return bookTennis(retryCount + 1)
+      }
+    }
+    
+    console.log(`${dayjs().format()} - Booking failed after ${retryCount + 1} attempts: ${e.message}`)
   }
 
   await browser.close()
 }
 
-bookTennis()
+// Main execution with retry wrapper
+const runBooking = async () => {
+  try {
+    await bookTennis(0)
+  } catch (e) {
+    console.log(`${dayjs().format()} - Final error: ${e.message}`)
+    process.exit(1)
+  }
+}
+
+runBooking()
