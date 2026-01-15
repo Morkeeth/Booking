@@ -34,8 +34,9 @@ jobs:
               "password": "${{ secrets.TENNIS_PASSWORD }}"
             },
             "locations": [
-              "Edouard Pailleron",
-              "Poliveau"
+              "Tennis Edouard Pailleron",
+              "Poliveau",
+              "Tennis Candie"
             ],
             "hours": [
               "20",

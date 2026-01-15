@@ -144,3 +144,58 @@ Call log:
 2025-11-27T08:00:06+01:00 - Starting searching tennis
 2025-11-27T08:00:06+01:00 - Browser started
 2025-11-27T08:00:08+01:00 - User connected
+2026-01-14T08:00:00+01:00 - Starting searching tennis
+2026-01-14T08:00:00+01:00 - Browser started
+2026-01-14T08:00:02+01:00 - User connected
+2026-01-14T08:00:04+01:00 - Search at Edouard Pailleron
+locator.screenshot: Timeout 120000ms exceeded.
+Call log:
+  - waiting for locator('#li-antibot-iframe').contentFrame().locator('#li-antibot-questions-container img')
+    - waiting for" https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&view=return_reservation_captcha" navigation to finish...
+    - navigated to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&view=return_reservation_captcha"
+
+    at bookTennis (/Users/morkeeth/EVALUATOR/Booking/index.js:115:94) {
+  name: 'TimeoutError'
+}
+2026-01-15T08:00:31+01:00 - Starting searching tennis
+2026-01-15T08:00:31+01:00 - Browser started
+2026-01-15T08:00:32+01:00 - User connected
+2026-01-15T08:00:33+01:00 - Search at Edouard Pailleron
+2026-01-15T08:00:44+01:00 - Error occurred: page.waitForSelector: Timeout 10000ms exceeded.
+Call log:
+  - waiting for locator('.tokens-suggestions-list-element').locator('text="Edouard Pailleron"') to be visible
+
+2026-01-15T08:00:44+01:00 - Retryable error detected, attempting retry 1/3
+2026-01-15T08:00:44+01:00 - Retry attempt 1/3
+2026-01-15T08:00:49+01:00 - Starting searching tennis
+2026-01-15T08:00:49+01:00 - Browser started
+2026-01-15T08:00:50+01:00 - User connected
+2026-01-15T08:00:51+01:00 - Search at Edouard Pailleron
+2026-01-15T08:01:01+01:00 - Error occurred: page.waitForSelector: Timeout 10000ms exceeded.
+Call log:
+  - waiting for locator('.tokens-suggestions-list-element').locator('text="Edouard Pailleron"') to be visible
+
+2026-01-15T08:01:02+01:00 - Retryable error detected, attempting retry 2/3
+2026-01-15T08:01:02+01:00 - Retry attempt 2/3
+2026-01-15T08:01:07+01:00 - Starting searching tennis
+2026-01-15T08:01:07+01:00 - Browser started
+2026-01-15T08:01:08+01:00 - User connected
+2026-01-15T08:01:09+01:00 - Search at Edouard Pailleron
+2026-01-15T08:01:19+01:00 - Error occurred: page.waitForSelector: Timeout 10000ms exceeded.
+Call log:
+  - waiting for locator('.tokens-suggestions-list-element').locator('text="Edouard Pailleron"') to be visible
+
+2026-01-15T08:01:19+01:00 - Retryable error detected, attempting retry 3/3
+2026-01-15T08:01:19+01:00 - Retry attempt 3/3
+2026-01-15T08:01:24+01:00 - Starting searching tennis
+2026-01-15T08:01:25+01:00 - Browser started
+2026-01-15T08:01:26+01:00 - User connected
+2026-01-15T08:01:27+01:00 - Search at Edouard Pailleron
+2026-01-15T08:01:37+01:00 - Error occurred: page.waitForSelector: Timeout 10000ms exceeded.
+Call log:
+  - waiting for locator('.tokens-suggestions-list-element').locator('text="Edouard Pailleron"') to be visible
+
+2026-01-15T08:01:37+01:00 - Booking failed after 4 attempts: page.waitForSelector: Timeout 10000ms exceeded.
+Call log:
+  - waiting for locator('.tokens-suggestions-list-element').locator('text="Edouard Pailleron"') to be visible
+
