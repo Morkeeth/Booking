@@ -199,3 +199,53 @@ Call log:
 Call log:
   - waiting for locator('.tokens-suggestions-list-element').locator('text="Edouard Pailleron"') to be visible
 
+2026-01-16T08:00:05+01:00 - Starting searching tennis
+2026-01-16T08:00:05+01:00 - Browser started
+2026-01-16T08:00:07+01:00 - User connected
+2026-01-16T08:00:08+01:00 - Search at Tennis Edouard Pailleron
+2026-01-16T08:01:08+01:00 - Error occurred: page.waitForSelector: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('.tokens-suggestions-list-element').locator('text="Tennis Edouard Pailleron"') to be visible
+
+2026-01-16T08:01:08+01:00 - Retryable error detected, attempting retry 1/3
+2026-01-16T08:01:08+01:00 - Retry attempt 1/3
+2026-01-16T08:01:13+01:00 - Starting searching tennis
+2026-01-16T08:01:13+01:00 - Browser started
+2026-01-16T08:01:15+01:00 - User connected
+2026-01-16T08:01:15+01:00 - Search at Tennis Edouard Pailleron
+2026-01-16T08:02:16+01:00 - Error occurred: locator.pressSequentially: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('.tokens-input-text')
+    - waiting for" https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&action=reservation_captcha" navigation to finish...
+    - navigated to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&view=return_reservation_captcha"
+
+2026-01-16T08:02:16+01:00 - Retryable error detected, attempting retry 2/3
+2026-01-16T08:02:16+01:00 - Retry attempt 2/3
+2026-01-16T08:02:21+01:00 - Starting searching tennis
+2026-01-16T08:02:21+01:00 - Browser started
+2026-01-16T08:02:22+01:00 - User connected
+2026-01-16T08:02:23+01:00 - Search at Tennis Edouard Pailleron
+2026-01-16T08:03:24+01:00 - Error occurred: locator.pressSequentially: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('.tokens-input-text')
+    - waiting for" https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&action=reservation_captcha" navigation to finish...
+    - navigated to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&view=return_reservation_captcha"
+
+2026-01-16T08:03:24+01:00 - Retryable error detected, attempting retry 3/3
+2026-01-16T08:03:24+01:00 - Retry attempt 3/3
+2026-01-16T08:03:29+01:00 - Starting searching tennis
+2026-01-16T08:03:29+01:00 - Browser started
+2026-01-16T08:03:30+01:00 - User connected
+2026-01-16T08:03:31+01:00 - Search at Tennis Edouard Pailleron
+2026-01-16T08:04:32+01:00 - Error occurred: locator.pressSequentially: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('.tokens-input-text')
+    - waiting for" https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&view=return_reservation_captcha" navigation to finish...
+    - navigated to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&view=return_reservation_captcha"
+
+2026-01-16T08:04:32+01:00 - Booking failed after 4 attempts: locator.pressSequentially: Timeout 60000ms exceeded.
+Call log:
+  - waiting for locator('.tokens-input-text')
+    - waiting for" https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&view=return_reservation_captcha" navigation to finish...
+    - navigated to "https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=reservation&view=return_reservation_captcha"
+
