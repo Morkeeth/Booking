@@ -53,79 +53,39 @@ const bookTennis = async (retryCount = 0) => {
     for (const location of locations) {
       console.log(`${dayjs().format()} - Search at ${location}`)
       // Faster navigation
-      await page.goto('https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=recherche&view=rechercher_creneau', { waitUntil: 'domcontentloaded' })
+      await page.goto('https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=recherche&view=recherche_creneau#!', { waitUntil: 'domcontentloaded' })
 
-      // select tennis location - must actually select from dropdown
+      // select tennis location - faster method with timeout
       const locationInput = page.locator('.tokens-input-text')
-      await locationInput.click()
+      await locationInput.fill(`${location} `)
       await new Promise(resolve => setTimeout(resolve, 500))
       
-      // Type location name
-      await locationInput.fill(location)
-      console.log(`${dayjs().format()} - Typed location: ${location}`)
-      
-      // Wait for suggestions dropdown to appear
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      // Try to find and click the suggestion - CRITICAL: must click a suggestion
-      let locationSelected = false
       try {
-        // Wait for suggestions list to appear
-        await page.waitForSelector('.tokens-suggestions-list-element', { timeout: 15000, state: 'visible' })
+        // Wait for suggestions with shorter timeout
+        await page.waitForSelector('.tokens-suggestions-list-element', { timeout: 5000 })
         const suggestions = await page.$$('.tokens-suggestions-list-element')
-        console.log(`${dayjs().format()} - Found ${suggestions.length} location suggestions`)
         
-        if (suggestions.length === 0) {
-          throw new Error('No suggestions found')
-        }
-        
-        // Try to find matching suggestion (flexible matching)
-        for (const suggestion of suggestions) {
-          const text = await suggestion.textContent().catch(() => '')
-          const cleanText = text.trim()
-          console.log(`${dayjs().format()} - Checking suggestion: "${cleanText}"`)
-          
-          // Match if location name is in suggestion or vice versa
-          const locationClean = location.replace('Tennis ', '').trim()
-          if (cleanText.includes(location) || cleanText.includes(locationClean) || 
-              location.includes(cleanText.replace('Tennis ', '')) || 
-              locationClean === cleanText.replace('Tennis ', '')) {
-            await suggestion.click()
-            locationSelected = true
-            console.log(`${dayjs().format()} - ✅ Selected location: ${cleanText}`)
-            await new Promise(resolve => setTimeout(resolve, 500))
+        // Try exact match first
+        let clicked = false
+        for (const sug of suggestions) {
+          const text = await sug.textContent().catch(() => '') || ''
+          if (text.trim().includes(location) || location.includes(text.trim())) {
+            await sug.click()
+            clicked = true
             break
           }
         }
         
-        // If no exact match, click FIRST suggestion (it's usually the right one)
-        if (!locationSelected && suggestions.length > 0) {
+        // If no exact match, click first suggestion
+        if (!clicked && suggestions.length > 0) {
           await suggestions[0].click()
-          const firstText = await suggestions[0].textContent().catch(() => '')
-          locationSelected = true
-          console.log(`${dayjs().format()} - ✅ Selected first suggestion: ${firstText.trim()}`)
-          await new Promise(resolve => setTimeout(resolve, 500))
         }
       } catch (e) {
-        console.log(`${dayjs().format()} - ⚠️ Suggestions not found: ${e.message}, trying Enter key`)
-        // Last resort: press Enter
+        // If suggestions don't appear, try pressing Enter
         await locationInput.press('Enter')
-        await new Promise(resolve => setTimeout(resolve, 1000))
       }
       
-      // Verify location is actually selected (should see a token/chip)
-      const selectedTokens = await page.$$('.token, [class*="token"]').catch(() => [])
-      console.log(`${dayjs().format()} - Found ${selectedTokens.length} selected location tokens`)
-      
-      if (selectedTokens.length === 0) {
-        console.log(`${dayjs().format()} - ⚠️ WARNING: No location token found - location may not be selected!`)
-        // Try one more time with Enter
-        await locationInput.press('Enter')
-        await new Promise(resolve => setTimeout(resolve, 1000))
-      } else {
-        const tokenText = await selectedTokens[0].textContent().catch(() => '')
-        console.log(`${dayjs().format()} - ✅ Location token confirmed: ${tokenText.trim()}`)
-      }
+      await new Promise(resolve => setTimeout(resolve, 500))
 
       // select date - pre-calculate
       await page.click('#when')
@@ -151,32 +111,9 @@ const bookTennis = async (retryCount = 0) => {
       }
 
       await page.click('#rechercher')
-      console.log(`${dayjs().format()} - Clicked search button`)
 
-      // Wait for AJAX call to complete - the slots are loaded via AJAX
-      console.log(`${dayjs().format()} - Waiting for AJAX search results to load`)
-      
-      // Wait for the AJAX response - look for network request to ajax_rechercher_creneau
-      try {
-        await page.waitForResponse(response => 
-          response.url().includes('ajax_rechercher_creneau'), 
-          { timeout: 30000 }
-        )
-        console.log(`${dayjs().format()} - AJAX response received`)
-      } catch (e) {
-        console.log(`${dayjs().format()} - AJAX wait timeout: ${e.message}`)
-      }
-      
-      // Wait for results to render in DOM
-      try {
-        await page.waitForSelector('[dateDeb], [datedeb], .creneaux, li:not(.masked)', { timeout: 20000 })
-        console.log(`${dayjs().format()} - Results rendered in DOM`)
-      } catch (e) {
-        console.log(`${dayjs().format()} - Results selector timeout: ${e.message}`)
-      }
-      
-      // Additional wait for JavaScript to render results
-      await new Promise(resolve => setTimeout(resolve, 3000))
+      // wait until the results page is fully loaded before continue - original method
+      await page.waitForLoadState('domcontentloaded')
       
       // Check current URL
       const currentUrl = page.url()
@@ -391,258 +328,37 @@ const bookTennis = async (retryCount = 0) => {
         await page.screenshot({ path: `img/debug-${location}-${Date.now()}.png`, fullPage: true }).catch(() => {})
       }
 
-      // Direct approach: Find all available (unmasked) slots first
-      if (!foundSlot) {
-        console.log(`${dayjs().format()} - 🔍 Searching for available (unmasked) slots`)
-        
-        const availableSlots = await page.evaluate((targetHours) => {
-          const results = []
-          // Find all li elements that contain hour info
-          const allLis = Array.from(document.querySelectorAll('li'))
-          
-          for (const li of allLis) {
-            const text = li.textContent || ''
-            const isMasked = li.classList.contains('masked')
-            
-            // Check if this li contains any of our target hours and is NOT masked
-            for (const hour of targetHours) {
-              if (text.includes(`${hour}h`) && !isMasked) {
-                // Find clickable parent or sibling
-                let clickable = li.closest('a, button, [onclick], [href], [dateDeb], [datedeb]')
-                if (!clickable && li.parentElement) {
-                  clickable = li.parentElement.closest('a, button, [onclick], [href]')
-                }
-                if (!clickable) {
-                  // Check siblings
-                  const siblings = Array.from(li.parentElement?.children || [])
-                  clickable = siblings.find(s => s.tagName === 'A' || s.tagName === 'BUTTON' || s.onclick)
-                }
-                
-                if (clickable) {
-                  results.push({
-                    hour: hour,
-                    text: text.trim(),
-                    tag: clickable.tagName,
-                    hasOnclick: !!clickable.onclick,
-                    hasHref: !!clickable.href,
-                    dateDeb: clickable.getAttribute('dateDeb') || clickable.getAttribute('datedeb') || ''
-                  })
-                }
-              }
-            }
-          }
-          
-          return results
-        }, config.hours).catch(() => [])
-        
-        if (availableSlots && availableSlots.length > 0) {
-          console.log(`${dayjs().format()} - ✅ Found ${availableSlots.length} available slots!`)
-          availableSlots.forEach((s, i) => {
-            console.log(`${dayjs().format()} -   ${i+1}. ${s.hour}:00 - ${s.tag} - dateDeb: "${s.dateDeb}"`)
-          })
-          
-          // Try clicking in priority order
-          for (const hour of config.hours) {
-            const slotsForHour = availableSlots.filter(s => s.hour === hour)
-            if (slotsForHour.length > 0) {
-              console.log(`${dayjs().format()} - Attempting to click slot for ${hour}:00`)
-              
-              // Try to find and click using dateDeb attribute
-              if (slotsForHour[0].dateDeb) {
-                try {
-                  const elem = await page.$(`[dateDeb="${slotsForHour[0].dateDeb}"], [datedeb="${slotsForHour[0].dateDeb}"]`).catch(() => null)
-                  if (elem) {
-                    const isVisible = await elem.isVisible().catch(() => false)
-                    if (isVisible) {
-                      console.log(`${dayjs().format()} - Clicking slot with dateDeb="${slotsForHour[0].dateDeb}"`)
-                      await elem.click()
-                      selectedHour = hour
-                      await new Promise(resolve => setTimeout(resolve, 3000))
-                      
-                      const newPageTitle = await page.title()
-                      if (newPageTitle.includes('Reservation') || newPageTitle.includes('Réservation')) {
-                        console.log(`${dayjs().format()} - ✅ Successfully navigated to reservation page!`)
-                        foundSlot = true
-                        break
-                      }
-                    }
-                  }
-                } catch (e) {
-                  console.log(`${dayjs().format()} - Error: ${e.message}`)
-                }
-              }
-              
-              // Fallback: try clicking li elements directly
-              if (!foundSlot) {
-                const lis = await page.$$('li').catch(() => [])
-                for (const li of lis) {
-                  try {
-                    const text = await li.textContent().catch(() => '')
-                    const isMasked = await li.evaluate(el => el.classList.contains('masked')).catch(() => true)
-                    if (text.includes(`${hour}h`) && !isMasked) {
-                      console.log(`${dayjs().format()} - Clicking unmasked li element for ${hour}h`)
-                      await li.click()
-                      selectedHour = hour
-                      await new Promise(resolve => setTimeout(resolve, 3000))
-                      
-                      const newPageTitle = await page.title()
-                      if (newPageTitle.includes('Reservation') || newPageTitle.includes('Réservation')) {
-                        console.log(`${dayjs().format()} - ✅ Successfully navigated to reservation page!`)
-                        foundSlot = true
-                        break
-                      }
-                    }
-                  } catch (e) {
-                    continue
-                  }
-                }
-              }
-              
-              if (foundSlot) break
-            }
-          }
-        }
-      }
-      
-      // Only try hour-by-hour search if we haven't found a slot yet
-      if (!foundSlot) {
+      // Use original method - exactly as in the original repo
       hoursLoop:
       for (const hour of config.hours) {
-        // Try both dateDeb and datedeb (case sensitive!)
-        const dateDebSelector1 = `[dateDeb*="${date.format('YYYY/MM/DD')}"][dateDeb*="${hour}:00"]`
-        const dateDebSelector2 = `[datedeb="${date.format('YYYY/MM/DD')} ${hour}:00:00"]`
-        const dateDebSelector3 = `[dateDeb="${date.format('YYYY/MM/DD')} ${hour}:00:00"]`
-        console.log(`${dayjs().format()} - Checking hour ${hour}:00 for date ${date.format('YYYY/MM/DD')}`)
-        
-        // Try original selector first - try multiple variations
-        let hourElement = await page.$(dateDebSelector1).catch(() => null) ||
-                         await page.$(dateDebSelector2).catch(() => null) ||
-                         await page.$(dateDebSelector3).catch(() => null)
-        let slots = []
-        
-        if (hourElement) {
-          console.log(`${dayjs().format()} - Found hour ${hour}:00 element using [dateDeb]`)
-          // Try to get all slots for this hour
-          slots = await page.$$(dateDebSelector1).catch(() => []) ||
-                  await page.$$(dateDebSelector2).catch(() => []) ||
-                  await page.$$(dateDebSelector3).catch(() => [])
-          
-          // Also try clicking unmasked time slots - these are the available ones!
-          const unmaskedSlots = await page.evaluate((hour) => {
-            const allLis = Array.from(document.querySelectorAll('li'))
-            return allLis
-              .filter(li => li.textContent.includes(`${hour}h`) && !li.classList.contains('masked'))
-              .slice(0, 10)
-          }, hour).catch(() => [])
-          
-          if (unmaskedSlots && unmaskedSlots.length > 0) {
-            console.log(`${dayjs().format()} - ✅ Found ${unmaskedSlots.length} unmasked (available) slots for ${hour}h`)
-            // Get the actual elements
-            const unmaskedElements = await page.$$(`li:not(.masked)`).catch(() => [])
-            for (const elem of unmaskedElements) {
-              const text = await elem.textContent().catch(() => '')
-              if (text.includes(`${hour}h`)) {
-                slots.push(elem)
-              }
-            }
+        const dateDeb = `[datedeb="${date.format('YYYY/MM/DD')} ${hour}:00:00"]`
+        if (await page.$(dateDeb)) {
+          if (await page.isHidden(dateDeb)) {
+            await page.click(`#head${location.replaceAll(' ', '')}${hour}h .panel-title`)
           }
-          
-          // Also look for clickable elements near time slots
-          const timeSlotParents = await page.evaluate((hour) => {
-            const allElements = Array.from(document.querySelectorAll('*'))
-            const results = []
-            for (const el of allElements) {
-              const text = (el.textContent || '').trim()
-              if (text.includes(`${hour}h`) && !text.includes('masked')) {
-                // Find parent or sibling that's clickable
-                let clickable = el.closest('a, button, [onclick], [href]')
-                if (!clickable && el.parentElement) {
-                  clickable = el.parentElement.closest('a, button, [onclick], [href]')
-                }
-                if (clickable) results.push(clickable)
-              }
-            }
-            return results.slice(0, 5).map(el => ({
-              tag: el.tagName,
-              text: (el.textContent || '').trim().substring(0, 50),
-              onclick: el.getAttribute('onclick') || '',
-              href: el.getAttribute('href') || ''
-            }))
-          }, hour).catch(() => [])
-          
-          if (timeSlotParents && timeSlotParents.length > 0) {
-            console.log(`${dayjs().format()} - Found ${timeSlotParents.length} clickable elements near ${hour}h slots`)
-            // Try to find and click these elements
-            for (const info of timeSlotParents) {
-              try {
-                const selector = info.tag.toLowerCase() + (info.onclick ? '[onclick*="' + info.onclick.substring(0, 30) + '"]' : '') + 
-                                (info.href ? '[href*="' + info.href.substring(0, 30) + '"]' : '')
-                const elem = await page.$(selector).catch(() => null)
-                if (elem) slots.push(elem)
-              } catch (e) {
+
+          const courtNumbers = !Array.isArray(config.locations) ? config.locations[location] : []
+          const slots = await page.$$(dateDeb)
+          for (const slot of slots) {
+            const bookSlotButton = `[courtid="${await slot.getAttribute('courtid')}"]${dateDeb}`
+            if (courtNumbers.length > 0) {
+              const courtName = (await (await page.$(`.court:left-of(${bookSlotButton})`)).innerText()).trim()
+              if (!courtNumbers.includes(parseInt(courtName.match(/Court N°(\d+)/)[1]))) {
                 continue
               }
             }
-          }
-        } else {
-          // Try alternative selectors - look for any clickable slot elements
-          console.log(`${dayjs().format()} - Trying alternative selectors for hour ${hour}:00`)
-          
-          // Try finding elements that contain the hour
-          const allClickable = await page.$$(`button, a, [onclick], [class*="book"], [class*="reserve"], [class*="creneau"]`).catch(() => [])
-          console.log(`${dayjs().format()} - Found ${allClickable.length} potentially clickable elements`)
-          
-          // Look for elements with time/hour in text or attributes
-          for (const elem of allClickable) {
-            try {
-              const text = await elem.textContent().catch(() => '') || ''
-              const onclick = await elem.getAttribute('onclick').catch(() => '') || ''
-              const href = await elem.getAttribute('href').catch(() => '') || ''
-              
-              // Check if this element is for our target hour and date
-              const matchesHour = text.includes(`${hour}h`) || onclick.includes(`${hour}:00`) || href.includes(`${hour}`)
-              const matchesDate = onclick.includes(date.format('YYYY/MM/DD')) || href.includes(date.format('YYYY/MM/DD')) || text.includes(date.format('DD/MM'))
-              
-              if (matchesHour && matchesDate) {
-                slots.push(elem)
-                console.log(`${dayjs().format()} - Found potential slot element: ${text.substring(0, 50)}`)
-              }
-            } catch (e) {
-              // Skip this element if there's an error
+
+            const [priceType, courtType] = (await (await page.$(`.price-description:left-of(${bookSlotButton})`)).innerHTML()).split('<br>')
+            if (!config.priceType.includes(priceType) || !config.courtType.includes(courtType)) {
               continue
             }
+            selectedHour = hour
+            await page.click(bookSlotButton)
+
+            break hoursLoop
           }
         }
-        
-        console.log(`${dayjs().format()} - Found ${slots.length} slots for hour ${hour}:00`)
-        
-        if (slots.length > 0) {
-          // Try to book the first available slot
-          for (const slot of slots) {
-            try {
-              // Check if it matches our filters (if we can determine price/court type)
-              const slotText = await slot.textContent().catch(() => '')
-              console.log(`${dayjs().format()} - Attempting to book slot: ${slotText.substring(0, 50)}`)
-              
-              // Click the slot
-              await slot.click()
-              selectedHour = hour
-              console.log(`${dayjs().format()} - ✅ Clicked slot for ${hour}:00`)
-              
-              // Wait a bit to see if we navigated to booking page
-              await new Promise(resolve => setTimeout(resolve, 2000))
-              foundSlot = true
-              break hoursLoop // Found a slot, exit the loop
-            } catch (e) {
-              console.log(`${dayjs().format()} - Failed to click slot: ${e.message}`)
-              continue
-            }
-          }
-        } else {
-          console.log(`${dayjs().format()} - No slots found for hour ${hour}:00`)
-        }
-        } // end hoursLoop
-      } // end if !foundSlot
+      }
       
       const finalPageTitle = await page.title()
       console.log(`${dayjs().format()} - Final page title: ${finalPageTitle}`)

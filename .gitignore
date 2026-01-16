@@ -2,4 +2,13 @@ node_modules/
 config.json
 img/
 *.ics
-SETUP.md
+*.log
+booking*.log
+event.ics
+img/*.png
+img/*.html
+
+# Ignore all MD files except README.md and STATUS.md (to prevent AI clutter)
+*.md
+!README.md
+!STATUS.md
