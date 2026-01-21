@@ -12,12 +12,17 @@ const config = {
   },
   locations: process.env.TENNIS_LOCATIONS 
     ? JSON.parse(process.env.TENNIS_LOCATIONS)
-    : ["Valeyre", "Suzanne Lenglen", "Poliveau"],
+    : [
+        "Tennis Edouard Pailleron",
+        "Poliveau",
+        "Tennis Candie",
+        "Tennis Broquedis - Asnières"
+      ],
   // date is optional - if not set, will book 6 days in advance
   ...(process.env.TENNIS_DATE && { date: process.env.TENNIS_DATE }),
   hours: process.env.TENNIS_HOURS
     ? JSON.parse(process.env.TENNIS_HOURS)
-    : ["14", "15", "16", "10", "11"],
+    : ["21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "09", "08"],
   priceType: process.env.TENNIS_PRICE_TYPE
     ? JSON.parse(process.env.TENNIS_PRICE_TYPE)
     : ["Tarif plein", "Tarif réduit"],
@@ -28,12 +33,12 @@ const config = {
     ? JSON.parse(process.env.TENNIS_PLAYERS)
     : [
         {
-          lastName: "Lastname1",
-          firstName: "Firstname1"
+          lastName: "Moerke",
+          firstName: "Oscar"
         },
         {
-          lastName: "Lastname2",
-          firstName: "Firstname2"
+          lastName: "Grabowski",
+          firstName: "Bean"
         }
       ],
   ntfy: {
