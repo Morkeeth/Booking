@@ -1,242 +1,136 @@
 import { chromium } from 'playwright'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat.js'
-import { writeFileSync } from 'fs'
+import { writeFileSync, mkdirSync } from 'fs'
 import { createEvent } from 'ics'
-import { huggingFaceAPI } from './lib/huggingface.js'
 import { config } from './staticFiles.js'
 import { notify } from './lib/ntfy.js'
 
 dayjs.extend(customParseFormat)
 
-// Pre-calculate target date (6 days ahead) before execution
-const TARGET_DATE = config.date ? dayjs(config.date, 'D/MM/YYYY') : dayjs().add(6, 'days')
-const DATE_ISO = TARGET_DATE.format('DD/MM/YYYY')
-const DATE_DEB_FORMAT = TARGET_DATE.format('YYYY/MM/DD')
+/** Wait until a given local time (HH:MM). If already past, resolves immediately. */
+function waitUntilTime(hhmm) {
+  const [h, m] = hhmm.split(':').map(Number)
+  const now = new Date()
+  let target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0)
+  if (target <= now) return Promise.resolve()
+  const ms = target - now
+  console.log(`${dayjs().format()} - Prewarm: waiting ${Math.round(ms / 1000)}s until ${hhmm} to click Search`)
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
-export const bookTennis = async (retryCount = 0) => {
+const bookTennis = async () => {
   const DRY_RUN_MODE = process.argv.includes('--dry-run')
-  const MAX_RETRIES = 3
-  
   if (DRY_RUN_MODE) {
     console.log('----- DRY RUN START -----')
     console.log('Script lancé en mode DRY RUN. Afin de tester votre configuration, une recherche va être lancé mais AUCUNE réservation ne sera réalisée')
   }
 
-  if (retryCount > 0) {
-    console.log(`${dayjs().format()} - Retry attempt ${retryCount}/${MAX_RETRIES}`)
-    await new Promise(resolve => setTimeout(resolve, 2000)) // Reduced retry delay
-  }
+  console.log(`${dayjs().format()} - Starting searching tennis`)
+  const browser = await chromium.launch({ headless: true, slowMo: 0, timeout: 120000 })
 
-  const startTime = Date.now()
-  console.log(`${dayjs().format()} - Starting booking for ${DATE_ISO}`)
-
-  // Optimized browser launch - removed --disable-javascript (breaks AJAX slot loading)
-  const browser = await chromium.launch({ 
-    headless: true, 
-    slowMo: 0,
-    args: ['--disable-images', '--disable-dev-shm-usage', '--no-sandbox']
-  })
-
+  console.log(`${dayjs().format()} - Browser started`)
   const page = await browser.newPage()
-  page.setDefaultTimeout(15000) // Aggressive timeout for faster failure
+  await page.route('https://captcha.liveidentity.com/captcha/public/frontend/api/v3/captcha-invisible/invisible-captcha-infos', (route) => route.abort())
+  await page.route('https://captcha.liveidentity.com/captcha/public/frontend/api/v3/captchas**', (route) => route.abort())
+  page.setDefaultTimeout(120000)
+  await page.goto('https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1')
+
+  await page.click('#button_suivi_inscription')
+  await page.fill('#username', config?.account?.email || process.env.ACCOUNT_EMAIL)
+  await page.fill('#password', config?.account?.password || process.env.ACCOUNT_PASSWORD)
+  await page.click('#form-login >> button')
+
+  console.log(`${dayjs().format()} - User connected`)
+
+  // wait for login redirection before continue
+  await page.waitForSelector('.main-informations')
+
+  mkdirSync('img', { recursive: true })
 
   try {
-    // Login - optimized
-    await page.goto('https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=tennis&view=start&full=1', { 
-      waitUntil: 'domcontentloaded',
-      timeout: 10000 
-    })
-    await page.click('#button_suivi_inscription', { timeout: 5000 })
-  await page.fill('#username', config.account.email)
-  await page.fill('#password', config.account.password)
-  await page.click('#form-login >> button')
-    await page.waitForSelector('.main-informations', { timeout: 10000 })
-    console.log(`${dayjs().format()} - Logged in (${Date.now() - startTime}ms)`)
-
     const locations = !Array.isArray(config.locations) ? Object.keys(config.locations) : config.locations
-    
+    let hasWaitedForOpening = false
     locationsLoop:
-    for (const location of locations) {
-      const locationStartTime = Date.now()
-      console.log(`${dayjs().format()} - Trying ${location}`)
+    for (const [i, location] of locations.entries()) {
+      const logLocation = process.env.GITHUB_ACTIONS ? `location ${i + 1}` : location
+      console.log(`${dayjs().format()} - Search at ${logLocation}`)
+      await page.goto('https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=recherche&view=recherche_creneau#!')
 
-      // Navigate to search page
-      await page.goto('https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=recherche&view=recherche_creneau#!', { 
-        waitUntil: 'domcontentloaded',
-        timeout: 10000 
-      })
+      // select tennis location
+      await page.locator('.tokens-input-text').pressSequentially(`${location} `)
+      await page.waitForSelector(`.tokens-suggestions-list-element >> text="${location}"`)
+      await page.click(`.tokens-suggestions-list-element >> text="${location}"`)
 
-      // Location selection - optimized
-      const locationInput = page.locator('.tokens-input-text')
-      await locationInput.fill(`${location} `)
-      
-      try {
-        await page.waitForSelector('.tokens-suggestions-list-element', { timeout: 3000 })
-        const suggestions = await page.$$('.tokens-suggestions-list-element')
-        
-        let clicked = false
-        for (const sug of suggestions) {
-          const text = await sug.textContent().catch(() => '') || ''
-          if (text.trim().includes(location) || location.includes(text.trim())) {
-            await sug.click()
-            clicked = true
-            break
-          }
-        }
-        
-        if (!clicked && suggestions.length > 0) {
-          await suggestions[0].click()
-        }
-      } catch (e) {
-        await locationInput.press('Enter')
+      // select date
+      await page.click('#when')
+      const date = config.date ? dayjs(config.date, 'D/MM/YYYY') : dayjs().add(6, 'days')
+      await page.waitForSelector(`[dateiso="${date.format('DD/MM/YYYY')}"]`)
+      await page.click(`[dateiso="${date.format('DD/MM/YYYY')}"]`)
+      await page.waitForSelector('.date-picker', { state: 'hidden' })
+
+      // Prewarm: wait until booking window opens (e.g. 08:00) before clicking Search
+      if (config.bookingOpensAt && !hasWaitedForOpening) {
+        await waitUntilTime(config.bookingOpensAt)
+        hasWaitedForOpening = true
       }
 
-      // Date selection - pre-calculated
-      await page.click('#when', { timeout: 5000 })
-      const dateSelector = `[dateiso="${DATE_ISO}"]`
-      
-      try {
-        await page.waitForSelector(dateSelector, { timeout: 8000 })
-        await page.click(dateSelector)
-        await page.waitForSelector('.date-picker', { state: 'hidden', timeout: 3000 })
-      } catch (e) {
-        // Try alternative format
-        const altDateSelector = `[dateiso="${TARGET_DATE.format('D/M/YYYY')}"]`
-        await page.waitForSelector(altDateSelector, { timeout: 5000 })
-        await page.click(altDateSelector)
-        await page.waitForSelector('.date-picker', { state: 'hidden', timeout: 3000 })
-      }
+      await page.click('#rechercher')
 
-      // Search
-      await page.click('#rechercher', { timeout: 5000 })
-      await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {
-        // Fallback to domcontentloaded if networkidle times out
-        return page.waitForLoadState('domcontentloaded', { timeout: 5000 })
-      })
+      // wait until the results page is fully loaded before continue
+      await page.waitForLoadState('domcontentloaded')
 
-      // Fast slot detection - direct selector queries only
-      let selectedHour = null
-      const courtNumbers = !Array.isArray(config.locations) ? config.locations[location] : []
-      
+      let selectedHour
       hoursLoop:
       for (const hour of config.hours) {
-        const dateDeb = `[datedeb="${DATE_DEB_FORMAT} ${hour}:00:00"]`
-        const slotElement = await page.$(dateDeb).catch(() => null)
-        
-        if (!slotElement) continue
-
-        // Expand panel if hidden
-        if (await page.isHidden(dateDeb).catch(() => true)) {
-          await page.click(`#head${location.replaceAll(' ', '')}${hour}h .panel-title`).catch(() => {})
-          await new Promise(resolve => setTimeout(resolve, 300)) // Minimal wait for panel expansion
-        }
-
-        const slots = await page.$$(dateDeb).catch(() => [])
-        
-        for (const slot of slots) {
-          const courtId = await slot.getAttribute('courtid').catch(() => null)
-          if (!courtId) continue
-
-          const bookSlotButton = `[courtid="${courtId}"]${dateDeb}`
-          
-          // Court number filter
-          if (courtNumbers.length > 0) {
-            try {
-              const courtElement = await page.$(`.court:left-of(${bookSlotButton})`)
-              if (courtElement) {
-                const courtText = await courtElement.innerText()
-                const courtMatch = courtText.match(/Court N°(\d+)/)
-                if (courtMatch && !courtNumbers.includes(parseInt(courtMatch[1]))) {
-                  continue
-                }
-              }
-            } catch (e) {
-              // Continue if court check fails
-            }
+        const dateDeb = `[datedeb="${date.format('YYYY/MM/DD')} ${hour}:00:00"]`
+        if (await page.$(dateDeb)) {
+          if (await page.isHidden(dateDeb)) {
+            await page.click(`#head${location.replaceAll(' ', '')}${hour}h .panel-title`)
           }
 
-          // Price and court type filter
-          try {
-            const priceElement = await page.$(`.price-description:left-of(${bookSlotButton})`)
-            if (priceElement) {
-              const priceHtml = await priceElement.innerHTML()
-              const [priceType, courtType] = priceHtml.split('<br>')
-              if (!config.priceType.includes(priceType) || !config.courtType.includes(courtType)) {
+          const courtNumbers = !Array.isArray(config.locations) ? config.locations[location] : []
+          const slots = await page.$$(dateDeb)
+          for (const slot of slots) {
+            const bookSlotButton = `[courtid="${await slot.getAttribute('courtid')}"]${dateDeb}`
+            if (courtNumbers.length > 0) {
+              const courtName = (await (await page.$(`.court:left-of(${bookSlotButton})`)).innerText()).trim()
+              if (!courtNumbers.includes(parseInt(courtName.match(/Court N°(\d+)/)[1]))) {
                 continue
               }
             }
-          } catch (e) {
-            // Continue if price check fails
-          }
 
-          // Found valid slot - click it
-          selectedHour = hour
-          await page.click(bookSlotButton, { timeout: 5000 })
-          console.log(`${dayjs().format()} - ✅ Slot found: ${location} at ${hour}:00 (${Date.now() - locationStartTime}ms)`)
-          break hoursLoop
+            const [priceType, courtType] = (await (await page.$(`.price-description:left-of(${bookSlotButton})`)).innerHTML()).split('<br>')
+            if (!config.priceType.includes(priceType) || !config.courtType.includes(courtType)) {
+              continue
+            }
+            selectedHour = hour
+            await page.click(bookSlotButton)
+
+            break hoursLoop
+          }
         }
       }
 
-      // Verify we're on reservation page
-      await page.waitForLoadState('domcontentloaded', { timeout: 5000 })
-      const finalPageTitle = await page.title()
-      
-      if (finalPageTitle !== 'Paris | TENNIS - Reservation') {
-        console.log(`${dayjs().format()} - No slot found at ${location}, trying next...`)
+      if (await page.title() !== 'Paris | TENNIS - Reservation') {
+        console.log(`${dayjs().format()} - Failed to find reservation for ${logLocation}`)
         continue
       }
 
-      console.log(`${dayjs().format()} - ✅ On reservation page for ${location}`)
+      await page.waitForSelector('.order-steps-infos h2 >> text="1 / 3 - Validation du court"')
 
-      // CAPTCHA handling - optimized
-      if (await page.$('.captcha').catch(() => null)) {
-        console.log(`${dayjs().format()} - Solving CAPTCHA`)
-        let i = 0
-        let captchaSolved = false
-        
-        while (!captchaSolved && i < 5) {
-          if (i > 0) {
-            await new Promise(resolve => setTimeout(resolve, 1000))
-          }
-          
-          try {
-            const captchaIframe = page.frameLocator('#li-antibot-iframe')
-            const captchaImg = await captchaIframe.locator('#li-antibot-questions-container img').screenshot({ path: 'img/captcha.png' })
-            const resCaptcha = await huggingFaceAPI(new Blob([captchaImg]))
-            await captchaIframe.locator('#li-antibot-answer').fill(resCaptcha)
-          await captchaIframe.locator('#li-antibot-validate').click()
-
-            // Check if solved
-            await new Promise(resolve => setTimeout(resolve, 1000))
-            const noteText = await captchaIframe.locator('#li-antibot-check-note').textContent().catch(() => '')
-            if (noteText === 'Vérifié avec succès') {
-              captchaSolved = true
-              console.log(`${dayjs().format()} - CAPTCHA solved`)
-            } else {
-              i++
-            }
-          } catch (e) {
-            i++
-            if (i >= 5) throw new Error('CAPTCHA failed after 5 attempts')
-          }
-        }
-      }
-
-      // Player input
       for (const [i, player] of config.players.entries()) {
         if (i > 0 && i < config.players.length) {
-          await page.click('.addPlayer', { timeout: 3000 })
+          await page.click('.addPlayer')
         }
-        await page.waitForSelector(`[name="player${i + 1}"]`, { timeout: 5000 })
+        await page.waitForSelector(`[name="player${i + 1}"]`)
         await page.fill(`[name="player${i + 1}"] >> nth=0`, player.lastName)
         await page.fill(`[name="player${i + 1}"] >> nth=1`, player.firstName)
       }
 
       await page.keyboard.press('Enter')
 
-      // Payment
-      await page.waitForSelector('#order_select_payment_form #paymentMode', { state: 'attached', timeout: 5000 })
+      await page.waitForSelector('#order_select_payment_form #paymentMode', { state: 'attached' })
       const paymentMode = await page.$('#order_select_payment_form #paymentMode')
       await paymentMode.evaluate(el => {
         el.removeAttribute('readonly')
@@ -245,32 +139,37 @@ export const bookTennis = async (retryCount = 0) => {
       await paymentMode.fill('existingTicket')
 
       if (DRY_RUN_MODE) {
-        console.log(`${dayjs().format()} - DRY RUN: Would book ${location} on ${DATE_ISO} at ${selectedHour}h`)
-        console.log(`Total time: ${Date.now() - startTime}ms`)
+        console.log(`${dayjs().format()} - Fausse réservation faite : ${logLocation}`)
+        if (!process.env.GITHUB_ACTIONS) console.log(`pour le ${date.format('YYYY/MM/DD')} à ${selectedHour}h`)
         console.log('----- DRY RUN END -----')
+        console.log('Pour réellement réserver un crénau, relancez le script sans le paramètre --dry-run')
+
         await page.click('#previous')
         await page.click('#btnCancelBooking')
+
         break locationsLoop
       }
 
-      // Submit booking
       const submit = await page.$('#order_select_payment_form #envoyer')
-      await submit.evaluate(el => el.classList.remove('hide'))
+      submit.evaluate(el => el.classList.remove('hide'))
       await submit.click()
 
-      await page.waitForSelector('.confirmReservation', { timeout: 10000 })
+      await page.waitForSelector('.confirmReservation')
 
       // Extract reservation details
       const address = (await (await page.$('.address')).textContent()).trim().replace(/( ){2,}/g, ' ')
       const dateStr = (await (await page.$('.date')).textContent()).trim().replace(/( ){2,}/g, ' ')
       const court = (await (await page.$('.court')).textContent()).trim().replace(/( ){2,}/g, ' ')
 
-      console.log(`${dayjs().format()} - ✅ BOOKING SUCCESS: ${address}`)
-      console.log(`Date: ${dateStr}, Court: ${court}`)
-      console.log(`Total execution time: ${Date.now() - startTime}ms`)
+      if (!process.env.GITHUB_ACTIONS) {
+        console.log(`${dayjs().format()} - Réservation faite : ${address}`)
+        console.log(`pour le ${dateStr}`)
+        console.log(`sur le ${court}`)
+      } else {
+        console.log('Réservation faite, regardez vos emails ou rendez-vous sur votre compte tennis.paris.fr pour plus de détails sur votre réservation.')
+      }
 
-      // Create ICS event
-      const [day, month, year] = [TARGET_DATE.date(), TARGET_DATE.month() + 1, TARGET_DATE.year()]
+      const [day, month, year] = [date.date(), date.month() + 1, date.year()]
       const hourMatch = dateStr.match(/(\d{2})h/)
       const hour = hourMatch ? Number(hourMatch[1]) : 12
       const start = [year, month, day, hour, 0]
@@ -288,50 +187,35 @@ export const bookTennis = async (retryCount = 0) => {
           console.log('ICS creation error:', error)
           return
         }
-        writeFileSync('event.ics', value)
-        if (config.ntfy?.enable === true) {
-          await notify(Buffer.from(value, 'utf8'), `Confirmation pour le ${DATE_ISO}`, config.ntfy)
+
+        if (!process.env.GITHUB_ACTIONS) {
+          writeFileSync('event.ics', value)
+        }
+        if (config.ntfy?.enable === true || process.env.NTFY_TOPIC) {
+          await notify(Buffer.from(value, 'utf8'), 'event.ics',
+            `Confirmation pour le ${date.format('DD/MM/YYYY')} - ${hour}h`, {
+              domain: config?.ntfy?.domain || process.env.NTFY_DOMAIN,
+              topic: config?.ntfy?.topic || process.env.NTFY_TOPIC,
+            })
         }
       })
       break
     }
   } catch (e) {
-    console.log(`${dayjs().format()} - Error: ${e.message}`)
-    console.log(`Execution time before error: ${Date.now() - startTime}ms`)
-    
-    // Retry logic
-    if (retryCount < MAX_RETRIES) {
-      const errorMsg = e.message.toLowerCase()
-      const isRetryableError = 
-        errorMsg.includes('captcha') ||
-        errorMsg.includes('timeout') ||
-        errorMsg.includes('network') ||
-        errorMsg.includes('navigation')
-      
-      if (isRetryableError) {
-        console.log(`${dayjs().format()} - Retrying... (${retryCount + 1}/${MAX_RETRIES})`)
-        await browser.close()
-        return bookTennis(retryCount + 1)
-      }
+    console.log(e)
+    const screenshotPath = 'img/failure.png'
+    const screenshot = await page.screenshot({ path: screenshotPath }).catch(() => null)
+    if (screenshot) console.log(`Screenshot: ${screenshotPath}`)
+
+    if ((config.ntfy?.enable === true || process.env.NTFY_TOPIC) && screenshot) {
+      await notify(screenshot, 'failure.png', 'Erreur lors de l\'execution du programme.', {
+        domain: config?.ntfy?.domain || process.env.NTFY_DOMAIN,
+        topic: config?.ntfy?.topic || process.env.NTFY_TOPIC,
+      })
     }
-    
-    console.log(`${dayjs().format()} - Booking failed after ${retryCount + 1} attempts`)
-    await page.screenshot({ path: `img/failure-${Date.now()}.png` }).catch(() => {})
   }
 
   await browser.close()
 }
 
-// Main execution (only if run directly, not when imported)
-const isMainModule = process.argv[1] && (process.argv[1].endsWith('index.js') || process.argv[1].endsWith('/index.js'))
-if (isMainModule) {
-  const runBooking = async () => {
-    try {
-      await bookTennis(0)
-    } catch (e) {
-      console.log(`${dayjs().format()} - Fatal error: ${e.message}`)
-      process.exit(1)
-    }
-  }
-  runBooking()
-}
+bookTennis()

@@ -1,24 +1,37 @@
 {
   "name": "tennis-booker-paris",
   "version": "1.0.0",
-  "description": "Script to book tennis court automatically",
+  "description": "Script to book tennis court in Paris automatically",
+  "keywords": [
+    "automation",
+    "sport",
+    "tennis",
+    "padel"
+  ],
+  "homepage": "https://github.com/bertrandda/par-ici-tennis",
+  "bugs": "https://github.com/bertrandda/par-ici-tennis/issues",
   "main": "index.js",
   "author": "Bertrand d'Aure",
   "license": "MIT",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bertrandda/par-ici-tennis.git"
+  },
+  "packageManager": "npm@11.6.2",
   "scripts": {
     "postinstall": "npx playwright install chromium",
-    "prestart": "node generate-config.js",
-    "start": "node server.js",
+    "start": "node index.js",
+    "start-dry": "node index.js --dry-run",
+    "wait": "node scripts/wait-8-am.js",
     "book": "node index.js",
     "eslint": "eslint ."
   },
   "dependencies": {
-    "@gradio/client": "^1.19.0",
-    "dayjs": "^1.11.18",
-    "express": "^4.18.2",
+    "@gradio/client": "^1.19.1",
+    "dayjs": "^1.11.19",
     "ics": "^3.8.1",
-    "playwright": "^1.55.0"
+    "playwright": "^1.57.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.25.1",

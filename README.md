@@ -1,8 +1,10 @@
 # tennis-booker-paris
 
-Script to automatically book a tennis court (on https://tennis.paris.fr)
+Script to automatically book a tennis court in Paris (on https://tennis.paris.fr)
 
-**NOTE**: They recently added a CAPTCHA during reservation process. The latest version **should** pass through. If it fails, open an issue with error logs, I will try to find an other way.
+> "Par ici" mean "this way" in french. The "Parisii" were a Gallic tribe that dwelt on the banks of the river Seine. They lived on lands now occupied by the modern city of Paris. The project name can be interpreted as "For a Parisian tennis, follow this way"
+
+**NOTE**: They added a CAPTCHA during reservation process. The latest version **should** pass through. If it fails, open an issue with error logs, I will try to find an other way.
 
 ## Table of Contents
 
@@ -10,15 +12,16 @@ Script to automatically book a tennis court (on https://tennis.paris.fr)
 - [Get started](#get-started)
   - [Configuration](#configuration)
   - [Ntfy notifications (optional)](#ntfy-notifications-optional)
-  - [AI CAPTCHA solver (optional)](#ai-captcha-solver-optional)
   - [Payment process](#payment-process)
   - [Running](#running)
+    - [On your machine](#on-your-machine)
+    - [Using GitHub Actions (beta)](#using-github-actions-beta)
 - [Contributing](#contributing)
 - [License](#license)
 
 ## Prerequisites
 - Node.js >= 20.6.x
-- A "carnet de réservation" in your Paris Tennis account (see [Payment process](#payment-process)) 
+- A "carnet de réservation" in your Paris Tennis account (see [Payment process](#payment-process))
 
 ## Get started
 
@@ -51,7 +54,7 @@ You can use two formats for the `locations` field:
 
 Choose the format that best matches your preferences.
 
-- `date` a string representing a date formated D/M/YYYY, if not set the date 6 days in future is used
+- `date` (optional) a string representing a date formated D/M/YYYY, do not set the date to automatically book 6 days in future as soon as the reservation slots opens
 
 - `hours` a list of hours ordered by preference
 
@@ -87,27 +90,13 @@ Notification example:
 
 ![Notification example](doc/ntfy.png)
 
-### AI CAPTCHA solver (optional)
-
-The script uses an AI model to automatically solve CAPTCHAs during the reservation process. By default, it uses a Hugging Face Space, but you can configure a custom one if the default one is down.
-
-You can find alternative spaces here https://huggingface.co/spaces, search `Text_Captcha_breaker` and select a running space. To use it, add the following configuration at the end of your `config.json`:
-
-```json
-"ai": {
-  "space": "hf-username/Text_Captcha_breaker"
-}
-```
-
-**Note**: The custom space must be compatible with the expected API format (accepting an image input and returning text output), that why you need to select a `Text_Captcha_breaker` space.
-
 ### Payment process
 
 To pass the payement phase without trouble you need a "carnet de réservation", be carefull you need a "carnet" that maches with your `priceType` & `courtType` [combination](https://tennis.paris.fr/tennis/jsp/site/Portal.jsp?page=rate&view=les_tarifs) selected previously
 
 ### Running
 
-#### Local Execution
+#### <ins>On your machine</ins>
 
 To run this project locally, install the dependencies
 
@@ -121,55 +110,41 @@ and run the script:
 npm start
 ```
 
-To test your configuration, you can run this project in dry-run mode. It will check court availability but no reservations will be made:
+**Don't be late:** Slots open at 08:00. Add `"bookingOpensAt": "08:00"` to your `config.json`; then start the script before 08:00 (e.g. at 07:59). It will log in, fill the form, then wait until 08:00 and click Search. You can also use `node run-at.js 07:59` to start at 07:59 automatically.
 
-> [!IMPORTANT]
-> due to a bug on the booking website, it is temporarily impossible to cancel a booking before final payment. The dry-run is therefore non-functional, and the command has been deactivated to avoid leaving an unsuccessful order. You can still try out using the classic launch command `npm start`, but you'll have to cancel the reservation manually (possible up to 24 hours before the reservation date).
+To test your configuration, you can run this project in dry-run mode. It will check court availability but no reservations will be made:
 
 ```sh
 npm run start-dry
 ```
 
-#### Automated Execution with GitHub Actions
+#### <ins>Using GitHub Actions (beta)</ins>
 
-You can automatically run this script daily at 8 AM using GitHub Actions. This is perfect for weekly court booking without needing to keep your computer running.
+> [!IMPORTANT]
+> Due to GitHub Actions limitations during high load on their servers, scheduled triggers may not run exactly at 08:00. Improvements are in progress to make the booking more reliable even with a slight delay.
+>
+> For perfect timing, consider use your [own server or computer](#On-your-machine).
 
-**Setup Instructions:**
+You can automate the booking using GitHub Actions workflows. The repository includes pre-configured workflows:
 
-1. **Fork/Push this repository to GitHub**
+1. **[Fork this repository](https://github.com/bertrandda/par-ici-tennis/fork)** to your own GitHub account (if you find this repository useful, you can also give it a star ⭐)
 
-2. **Configure GitHub Secrets:**
-   Go to your repository Settings → Secrets and variables → Actions → New repository secret
+2. **Configure GitHub secrets and variables:**
+   - Go to your repository Settings → Secrets and variables → Actions
+   - Add the following **secrets**:
+     - `ACCOUNT_EMAIL`: your Paris Tennis email
+     - `ACCOUNT_PASSWORD`: your Paris Tennis password
+     - `NTFY_TOPIC`: (optional) your ntfy topic for notifications
+     - `NTFY_DOMAIN`: (optional) custom ntfy server domain if you don't use `ntfy.sh`
+   - Add a **variable**:
+     - `CONFIG_JSON`: the content of your `config.json` file (⚠️ without account credentials and ntfy config for security reasons). Without date line to always book 6 days in advance
 
-   Required secrets:
-   - `TENNIS_EMAIL`: Your tennis.paris.fr account email
-   - `TENNIS_PASSWORD`: Your tennis.paris.fr account password
-   
-   Optional secrets (with defaults):
-   - `TENNIS_LOCATIONS`: Array of preferred locations, e.g., `["Valeyre", "Suzanne Lenglen"]`
-   - `TENNIS_HOURS`: Array of preferred hours, e.g., `["14", "15", "16"]`
-   - `TENNIS_PLAYERS`: Array of player objects, e.g., `[{"lastName": "Doe", "firstName": "John"}]`
-   - `TENNIS_PRICE_TYPE`: Array of price types, e.g., `["Tarif plein", "Tarif réduit"]`
-   - `TENNIS_COURT_TYPE`: Array of court types, e.g., `["Découvert", "Couvert"]`
-   - `NTFY_ENABLE`: Set to `true` to enable ntfy notifications
-   - `NTFY_TOPIC`: Your ntfy topic name for notifications
+3. **Enable workflow:**
+   - The day before you want execute the script, go to the Actions tab and enable `Tennis booking` workflow
+   - The workflow runs the following day at 08:00 Paris time and automatically disables itself after running to avoid restart next days
+   - Manually re-enable it from the Actions tab when you need to book again
 
-3. **Configure the schedule:**
-   The workflow runs daily at 8:00 AM UTC by default. To adjust for your timezone, edit `.github/workflows/book-tennis.yml`:
-   - For 8 AM EST (Eastern): use `13 8 * * *` (UTC+5)
-   - For 8 AM PST (Pacific): use `16 8 * * *` (UTC+8)
-   - For 8 AM CET (Central European): use `7 8 * * *` (UTC-1)
-
-4. **Manual trigger (optional):**
-   You can manually trigger the workflow from the Actions tab → "Book Tennis Court" → "Run workflow"
-
-5. **Monitor execution:**
-   - View workflow runs in the Actions tab
-   - Failed runs will upload screenshots as artifacts for debugging
-
-**Note:** GitHub Actions runs in UTC timezone, so adjust the cron schedule accordingly. The script will book courts 6 days in advance by default.
-
-You can also start script automatically using cron or equivalent on your local machine
+To test Github Actions config you can start `Tennis booking dry-run` workflow manually. It will check court availability but no reservations will be made.
 
 ## Contributing
 
